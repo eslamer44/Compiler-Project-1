@@ -1,6 +1,7 @@
 <?php
 include ("Stack.php");
 include("StringHandling.php");
+include ("Array.php");
 class parser {
     public $parsingTable  = array (
         "program" => array("SIow"=>"declaration-list" , "Iow"=>"declaration-list" , "Iowf"=>"declaration-list" , "SIowf"=>"declaration-list" , "Chain"=>"declaration-list" , "Chlo"=>"declaration-list" , "Worthless"=>"declaration-list" , "Include"=>"include_command" , "/$"=>"comment" , "$$$"=>"comment" , "*"=>"" , "/"=>"" , "+"=>"" , "-"=>"" , "str"=>"" , "=="=>""  , "!="=>"" , "<"=>"" , ">"=>"" , "<="=>"" , ">="=>"" , ";"=>"" , "," => "" , ")"=>"" , "("=>""  , "Loopwhen"=>"" , "Iteratewhen"=>"" , "Stop"=>"" , "Turnback"=>"" , "If"=>"" , "||" =>"" , "Int_NUM"=> "" , "Float_NUM"=>"" , "{"=>"" , "identifier"=> "" , "&&" => "" , "$" => "" , "else"=>"" , "=" => ""),
@@ -96,36 +97,24 @@ class parser {
                 $this->parsingStack->pop();
                 $topStack = $this->parsingStack->topElement();
             }
-            else if ($this->isStatmentEnding($currentToken[0]) && $this->parsingTable[$topStack]["$"] != "0" ){
-                $currentToken = $scannerOutput[++$tokenPointer];
-            }
+            // else if ($this->isStatmentEnding($currentToken[0]) && $this->parsingTable[$topStack]["$"] != "0" ){
+            //     $currentToken = $scannerOutput[++$tokenPointer];
+            // }
             if ( $this->isTerminal()  ){
                 if ( $topStack == $this->getToken($currentToken) ){
-                   // echo "ënter";
                    $this->parsingStack->pop();
-                //    if ( ! $this->isStatmentEnding($currentToken[0]) ){
-                //         $currentToken = $scannerOutput[++$tokenPointer];
-                //    }
-                $currentToken = $scannerOutput[++$tokenPointer];
+                   $currentToken = $scannerOutput[++$tokenPointer];
                    $topStack = $this->parsingStack->topElement(); 
-                   echo $topStack."---------->".$this->getToken($currentToken);
-                   echo "<br>";
-                //    echo "ënter";
                 }
                 else{
                     //$this->error();
-                    // echo "ënter";
                     break; // error
                     
                 }
             }
             else { // nonterminal
-                // echo "ënter";
-                // echo $this->parsingStack->topElement()."---------->".$this->getToken($currentToken);
-                // echo "<br>";
                 if ( $this->isErrorEntry($topStack , $currentToken)){
-                    $this->error();
-                    // echo "ënter";
+                    // $this->error();
                     break;
                 } 
                 else{
@@ -144,18 +133,6 @@ class parser {
         }
     }
 
-
-
-    private function isStatmentEnding($ch){
-        $endSymbols = array(")",";","}","$");
-        for ( $i = 0 ; $i < sizeof($endSymbols) ; $i++ ){
-            if ( $ch == $endSymbols[$i] ){
-                return true;
-            }
-        }
-        return false;
-    }
-
     // create stack and push $ and first symbol of parsing table
     private function startParsingStack(){
         $this->parsingStack = new Stack();
@@ -163,37 +140,39 @@ class parser {
         $this->parsingStack->push("program");
     }
 
+    private function isErrorEntry($top , $token ) {
+        return $this->getElement( $top , $token ) == "";
+    }
+
+        // get element from parsing table
+    private function getElement($top , $token){
+        return $this->parsingTable[$top][$this->getToken ($token)];
+    }
+
+    
+
+    
+
+    private function pushEntryInStack($str){
+        $parseElement = StringHandle :: splitByDelimiter($str);
+        for ( $i = Arrays :: arraySize($parseElement) - 1  ; $i >= 0 ; $i-- ){
+            $this->parsingStack->push($parseElement[$i]);
+        }
+    }
+
     // check if grammer rule is terminal 
     private function isTerminal() { 
-        // echo "enteer<br>";
-        // if (! isset($this->parsingTable[$this->parsingStack->topElement()])){
-        //     echo "true<br>"; 
-        // }
-        // else{
-        //     // echo $this->parsingTable[$this->parsingStack->topElement()];
-        //     echo "false<br>";
-        // }
         return ! isset($this->parsingTable[$this->parsingStack->topElement()]);
     }
+
     private function error() {
         echo "error";
         echo "<br>";
     }
 
     // check empty entry
-    private function isErrorEntry($top , $token ) {
-        // echo $top.$token;
-        // echo$this->getElement( $top , $token ); 
-        return $this->getElement( $top , $token ) == "";
-    }
 
-
-    private function pushEntryInStack($str){
-        $parseElement = StringHandle :: splitByDelimiter($str);
-        for ( $i = sizeof($parseElement) - 1  ; $i >= 0 ; $i-- ){
-            $this->parsingStack->push($parseElement[$i]);
-        }
-    }
+  
     
     
     private function getToken ($token){
@@ -211,10 +190,7 @@ class parser {
             return $token[0];
     }
 
-    // get element from parsing table
-    private function getElement($top , $token){
-        return $this->parsingTable[$top][$this->getToken ($token)];
-    }
+    
 
     public function print ($x , $y){
         echo $this->parsingTable [ $x ][$y];
@@ -226,6 +202,15 @@ class parser {
         }
         elseif ($this->parsingTable[$top]["$"] == "0" && $this->parsingTable[$top][$current] == "" ){
             return true;
+        }
+        return false;
+    }
+    private function isStatmentEnding($ch){
+        $endSymbols = array(")",";","}","$");
+        for ( $i = 0 ; $i < sizeof($endSymbols) ; $i++ ){
+            if ( $ch == $endSymbols[$i] ){
+                return true;
+            }
         }
         return false;
     }

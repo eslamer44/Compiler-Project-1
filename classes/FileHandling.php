@@ -1,6 +1,6 @@
 <?php
 include ("compiler.php");
-
+include ("Array.php");
 class FileHandling{
    private $scanTokens;
    public $fileContent ;
@@ -21,33 +21,24 @@ class FileHandling{
     }
 
     public function getScannerForFile($filePass){
-        // $tokens;
+        $output = "";
         $this->fileContent = $this->readFile ($filePass);
         $scanTokens = new Scanner($this->fileContent);
         $tokens = $scanTokens->ScanAllToken();
-        // $this->CheckIncludingFiles($tokens);
-        // echo "###".$filePass."###";
-        // echo "<br>";
-        // $this->PrintTokens($tokens);
-        return $this->frontEnd($tokens);
+        $output .= $this->CheckIncludingFiles($tokens);
+        $output .= "###".$filePass."###\n";
+        $output .=$this->frontEnd($tokens);
+        return $output;
 
     }
-    public function PrintTokens($tokens){
-        for ( $i = 0 ; $i < sizeof($tokens) ; $i++ ){
-          echo $tokens[$i][2]."--------->";
-          echo "\"".$tokens[$i][0]."\"";
-          echo "------------->";
-          echo $tokens[$i][1];
-          echo "<br>";
-        }
-    }
+    
 
     private function frontEnd($tokens){
         $str = "" ;
-        for ( $i = 0 ; $i < sizeof($tokens) ; $i++ ){
-          $str .=$tokens[$i][2]."--------->"; 
-          $str .="\"".$tokens[$i][0]."\"";
-          $str .=$tokens[$i][1];
+        for ( $i = 0 ; $i < Arrays :: arraySize($tokens) ; $i++ ){
+          $str .=$tokens[$i][2].":    "; 
+          $str .="Token: \"".$tokens[$i][0]."\"            ";
+          $str .="Token Type: ".$tokens[$i][1];
           $str .="\n";
 
         }
@@ -55,20 +46,15 @@ class FileHandling{
     }
 
     private function CheckIncludingFiles ($tokens){
-      for ($i = 0 ; $i < sizeof($tokens) ; $i += 2 ){
-        if ($tokens[$i][0] == "Include" && $tokens[$i+1][1] == "file"){
-          $this->getSCannerForFile($tokens[1][0]);
-        }
-        else{
-          break;
+      $output = "";
+      for ($i = 0 ; $i <  Arrays :: arraySize($tokens) ; $i++ ){
+        if ( $tokens[$i][1] == "file"){
+          $output .= $this->getSCannerForFile($tokens[1][0]);
         }
       }
+      return $output;
     }
 
-    public function print (){
-      return "Eslam";
-    }
-   
     
 
 }

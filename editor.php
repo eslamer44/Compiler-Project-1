@@ -3,7 +3,7 @@
     // include "FileHandling.php";
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {   
             $X = new Main();
-            $firstname = $X->mianConnection($_POST["code"],$_POST["code-file"]);
+            $output = $X->mianConnection($_POST["code"],$_POST["code-file"]);
         
     }
 ?>
@@ -39,7 +39,7 @@
         </div>
         <div class="output-container">
             <h2 class="output-title">output</h2>
-            <textarea name="output" readonly class="output-text"> <?php if (isset($firstname)) { echo  $firstname; } ?></textarea>
+            <textarea name="output" readonly class="output-text"> <?php if (isset($output)) { echo  $output; } ?></textarea>
         </div>
     </div>
     <script src="lib/jquery/jquery.min.js"></script>

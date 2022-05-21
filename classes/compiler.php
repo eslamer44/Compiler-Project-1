@@ -61,12 +61,10 @@ class Scanner{
 
 
     public function ScanAllToken(){
-        // $this->sourceCode = $str;
         $tokenDefinition = array();
         $tokenDefinitionPointer = 0;
         $this->sourceCode .= " ";
         while( $this->scanPointer < StringHandle :: strLength($this->sourceCode) ) {
-            //echo "Enter";
              $tokenDefinition[$tokenDefinitionPointer++] = $this->scanOneToken();
              $this->voidComment($tokenDefinition[$tokenDefinitionPointer-1][1]);
         }
@@ -80,7 +78,6 @@ class Scanner{
         $ch = $this->sourceCode[$this->scanPointer];
         while ( $state != 0 &&  ! $this->transitionTable->isAcceptState( $state ) && 
         $this->scanPointer < StringHandle :: strLength($this->sourceCode) ){
-            //echo $state."<br>".$ch;
             $ch = $this->sourceCode[$this->scanPointer];
             $newState = (int) $this->transitionTable->getNextState( $ch , $state );
             $token .= $this->getNextCharacter( $state  );
@@ -102,7 +99,6 @@ class Scanner{
     } 
 
     private function getTokenType ($state  , $token){
-        //echo $state;
         if ( $state == 0 ){ // if state beccame = 0 in any case that mean error state 
                 $token = $this->getErrorToken ($token);
                 return array ($token,"error","Line: ".$this->lineNumber);

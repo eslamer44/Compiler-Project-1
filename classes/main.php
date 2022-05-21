@@ -29,9 +29,9 @@ class Main {
     private function frontEnd($tokens){
         $str = "" ;
         for ( $i = 0 ; $i < sizeof($tokens) ; $i++ ){
-          $str .=$tokens[$i][2]."--------->"; 
-          $str .="\"".$tokens[$i][0]."\"--------->";
-          $str .=$tokens[$i][1];
+          $str .=$tokens[$i][2].":  "; 
+          $str .="Token: \"".$tokens[$i][0]."\"        ";
+          $str .="Token Type: ".$tokens[$i][1];
           $str .="\n";
 
         }
